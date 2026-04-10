@@ -1,5 +1,5 @@
 // ── Configuración ──
-const BASE_URL = "http://localhost:8000"; // Cambia por tu URL de ngrok/cloudflare
+const BASE_URL = "https://proposals-suburban-beverages-agents.trycloudflare.com"; // Cambia por tu URL de ngrok/cloudflare
 
 // ── Reloj ──
 function actualizarReloj() {
