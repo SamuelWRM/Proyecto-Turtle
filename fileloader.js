@@ -61,7 +61,7 @@ function crearTarjeta(nombreArchivo) {
 
 // ── Pedir las grabaciones al backend ──
 async function cargarGrabaciones() {
-  const baseUrl = "http://localhost:8000"; // Cambia esto por tu URL de ngrok/cloudflare
+  const baseUrl = "https://proposals-suburban-beverages-agents.trycloudflare.com"; // Cambia esto por tu URL de ngrok/cloudflare
 
   try {
     const respuesta = await fetch(`${baseUrl}/grabaciones/${numeroCamara}`);
