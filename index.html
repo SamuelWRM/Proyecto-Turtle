@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Proyecto NVR</title>
+    <!-- HLS.js: librería que permite reproducir streams HLS en el navegador -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.7/hls.min.js"></script>
     <style>
       :root {
         --bg: #212529;
@@ -36,6 +38,7 @@
         min-height: 100vh;
       }
 
+      /* ── HEADER ── */
       header {
         background: var(--surface);
         border-bottom: 1px solid var(--border);
@@ -43,6 +46,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        flex-shrink: 0;
       }
 
       header h1 {
@@ -71,11 +75,11 @@
         background: var(--border);
         color: var(--white);
       }
-
       .nav-link.active {
         color: var(--white);
       }
 
+      /* ── LAYOUT PRINCIPAL ── */
       .main-layout {
         display: flex;
         flex: 1;
@@ -86,22 +90,62 @@
       .primary-col {
         flex: 1;
         min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
       }
 
+      .primary-label {
+        font-size: 0.75rem;
+        color: var(--accent);
+        letter-spacing: 0.5px;
+      }
+      /*
+      Video principal. Usamos <video> en lugar de <img> porque
+      HLS.js necesita la API de video del navegador para alimentarle
+      los fragmentos .ts. Con MJPEG alcanzaba con <img>, pero HLS
+      es más sofisticado y requiere el elemento correcto.
+    */
+      #primaryVideo {
+        width: 1150px;
+        height: 448px;
+        flex: 1;
+        background: #000;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        min-height: 480px;
+        display: block;
+      }
+
+      /* Panel lateral */
       .side-col {
         width: 320px;
         flex-shrink: 0;
         display: flex;
         flex-direction: column;
         gap: 10px;
+        overflow-y: auto;
       }
 
+      /* Caja de cada cámara secundaria */
       .cam-box {
         background: #000;
         border-radius: 6px;
         overflow: hidden;
         border: 1px solid var(--border);
         position: relative;
+        cursor: pointer;
+        transition: border-color 0.2s;
+        flex-shrink: 0;
+      }
+
+      .cam-box:hover {
+        border-color: var(--accent);
+      }
+
+      /* Marca visualmente cuál cámara es la que está en el principal */
+      .cam-box.active {
+        border-color: var(--accent);
       }
 
       .cam-label {
@@ -115,24 +159,47 @@
         border-radius: 3px;
         letter-spacing: 0.5px;
         z-index: 10;
+        pointer-events: none;
       }
 
-      #streamImg {
+      /*
+      Videos secundarios sin controles, silenciados y en autoplay.
+      muted + autoplay es el par mágico que los navegadores modernos
+      requieren para reproducir video automáticamente sin que el usuario
+      haya interactuado primero con la página.
+    */
+      .secondary-video {
         width: 100%;
-        display: block;
-        min-height: 500px;
-        object-fit: cover;
-        background: #000;
-      }
-
-      .secondary-img {
-        width: 100%;
-        display: block;
         height: 160px;
         object-fit: cover;
+        display: block;
         background: #000;
       }
 
+      /* Overlay "Ver en principal" que aparece al hacer hover */
+      .cam-box::after {
+        content: "Ver en principal";
+        position: absolute;
+        inset: 0;
+        background: rgba(13, 202, 240, 0.15);
+        color: var(--accent);
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+
+      .cam-box:hover::after {
+        opacity: 1;
+      }
+      /* La cámara activa no necesita el overlay porque ya está en principal */
+      .cam-box.active::after {
+        content: none;
+      }
+
+      /* ── FOOTER ── */
       footer {
         border-top: 1px solid var(--border);
         padding: 12px 24px;
@@ -140,6 +207,7 @@
         justify-content: space-between;
         align-items: center;
         background: var(--surface);
+        flex-shrink: 0;
       }
 
       .footer-text {
@@ -149,88 +217,32 @@
     </style>
   </head>
   <body>
-    <!-- Header -->
     <header>
       <h1>Proyecto NVR</h1>
       <nav>
         <a href="index.html" class="nav-link active">En Vivo</a>
-        <a href="Grabaciones.html" class="nav-link">Grabaciones</a>
-        <a href="SpaceInvaders.html" class="nav-link">Juegos</a>
+        <a href="select_grab.html" class="nav-link">Grabaciones</a>
       </nav>
     </header>
 
-    <!-- Layout principal -->
     <div class="main-layout">
-      <!-- Cámara principal -->
+      <!-- Cámara principal: arranca mostrando la cámara 6 por defecto -->
       <div class="primary-col">
-        <div class="cam-box">
-          <span class="cam-label">CAM 6</span>
-          <img
-            id="streamImg"
-            src="https://cooperative-miss-action-merchandise.trycloudflare.com/cam6"
-          />
-        </div>
+        <span class="primary-label" id="primaryLabel">CAM 6 — PRINCIPAL</span>
+        <video id="primaryVideo" muted autoplay playsinline></video>
       </div>
 
-      <!-- Panel lateral con cámaras secundarias -->
-      <div class="side-col">
-        <div class="cam-box">
-          <span class="cam-label">CAM 1</span>
-          <img
-            class="secondary-img"
-            src="https://infinite-aim-glasses-residents.trycloudflare.com/cam6"
-          />
-        </div>
-
-        <div class="cam-box">
-          <span class="cam-label">CAM 2</span>
-          <img
-            class="secondary-img"
-            src="https://infinite-aim-glasses-residents.trycloudflare.com/cam3"
-          />
-        </div>
-
-        <div class="cam-box">
-          <span class="cam-label">CAM 3</span>
-          <img
-            class="secondary-img"
-            src="https://infinite-aim-glasses-residents.trycloudflare.com/cam4"
-          />
-        </div>
-
-        <div class="cam-box">
-          <span class="cam-label">CAM 4</span>
-          <img
-            class="secondary-img"
-            src="https://infinite-aim-glasses-residents.trycloudflare.com/cam5"
-          />
-        </div>
-
-        <div class="cam-box">
-          <span class="cam-label">CAM 5</span>
-          <img
-            class="secondary-img"
-            src="https://infinite-aim-glasses-residents.trycloudflare.com/cam2"
-          />
-        </div>
-      </div>
+      <!-- Panel lateral: las 6 cajas se generan con JavaScript -->
+      <div class="side-col" id="sideCol"></div>
     </div>
 
-    <!-- Footer -->
     <footer>
       <span class="footer-text"
-        >© 2026 UAT RODHE | Ingenieria en Sistemas Computacionales 4 "J"</span
+        >>© 2026 UAT RODHE | Ingenieria en Sistemas Computacionales 4 "J"</span
       >
       <span class="footer-text" id="reloj"></span>
     </footer>
 
-    <script>
-      function actualizarReloj() {
-        document.getElementById("reloj").textContent =
-          new Date().toLocaleTimeString("es-MX");
-      }
-      setInterval(actualizarReloj, 1000);
-      actualizarReloj();
-    </script>
+    <script src="index.js"></script>
   </body>
 </html>

@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seleccionar Cámara — Proyecto NVR</title>
+    <style>
+      :root {
+        --bg: #212529;
+        --surface: #2c3034;
+        --border: #373b3e;
+        --text: #dee2e6;
+        --muted: #6c757d;
+        --accent: #0dcaf0;
+        --white: #f8f9fa;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* ── HEADER ── mismo que NVR.html */
+      header {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      header h1 {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: var(--white);
+      }
+
+      nav {
+        display: flex;
+        gap: 8px;
+      }
+
+      .nav-link {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.875rem;
+        padding: 6px 14px;
+        border-radius: 4px;
+        transition:
+          background 0.15s,
+          color 0.15s;
+      }
+
+      .nav-link:hover {
+        background: var(--border);
+        color: var(--white);
+      }
+
+      .nav-link.active {
+        color: var(--white);
+      }
+
+      /* ── CONTENIDO PRINCIPAL ── */
+      main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 48px 24px;
+        gap: 32px;
+      }
+
+      /* Título y subtítulo de la sección */
+      .page-title {
+        text-align: center;
+      }
+
+      .page-title h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--white);
+        margin-bottom: 8px;
+      }
+
+      .page-title p {
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      /* Grid de botones de cámara */
+      .cam-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        width: 100%;
+        max-width: 700px;
+      }
+
+      /* Cada botón de cámara */
+      .cam-btn {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 32px 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        cursor: pointer;
+        text-decoration: none;
+        color: var(--text);
+        transition:
+          background 0.15s,
+          border-color 0.15s,
+          color 0.15s;
+      }
+
+      .cam-btn:hover {
+        background: var(--border);
+        border-color: var(--accent);
+        color: var(--white);
+      }
+
+      /* Ícono de cámara dibujado con CSS */
+      .cam-icon {
+        width: 40px;
+        height: 30px;
+        border: 2px solid var(--muted);
+        border-radius: 4px;
+        position: relative;
+        transition: border-color 0.15s;
+      }
+
+      .cam-btn:hover .cam-icon {
+        border-color: var(--accent);
+      }
+
+      /* Lente de la cámara */
+      .cam-icon::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 2px solid var(--muted);
+        transition: border-color 0.15s;
+      }
+
+      .cam-btn:hover .cam-icon::before {
+        border-color: var(--accent);
+      }
+
+      /* Triángulo lateral de la cámara */
+      .cam-icon::after {
+        content: "";
+        position: absolute;
+        right: -9px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-left: 7px solid var(--muted);
+        border-top: 5px solid transparent;
+        border-bottom: 5px solid transparent;
+        transition: border-left-color 0.15s;
+      }
+
+      .cam-btn:hover .cam-icon::after {
+        border-left-color: var(--accent);
+      }
+
+      /* Texto del botón */
+      .cam-btn span {
+        font-size: 0.95rem;
+        font-weight: 500;
+      }
+
+      /* Número de la cámara en color acento */
+      .cam-btn small {
+        font-size: 0.72rem;
+        color: var(--muted);
+      }
+
+      .cam-btn:hover small {
+        color: var(--accent);
+      }
+
+      /* ── FOOTER ── mismo que NVR.html */
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 12px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--surface);
+      }
+
+      .footer-text {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <h1>Proyecto NVR</h1>
+      <nav>
+        <a href="index.html" class="nav-link">En Vivo</a>
+        <a href="select_grab.html" class="nav-link active">Grabaciones</a>
+      </nav>
+    </header>
+
+    <!-- Contenido -->
+    <main>
+      <div class="page-title">
+        <h2>Seleccionar Cámara</h2>
+        <p>
+          Elige una cámara para explorar sus grabaciones y analizarlas con IA
+        </p>
+      </div>
+
+      <!-- Grid de 6 cámaras en 3 columnas -->
+      <div class="cam-grid">
+        <!-- Cada botón es un enlace a la página de grabaciones de esa cámara -->
+        <!-- Por ahora apuntan a grabaciones.html, puedes agregar ?cam=1 después -->
+        <a class="cam-btn" href="grabaciones.html?cam=1">
+          <div class="cam-icon"></div>
+          <span>Cámara 1</span>
+          <small>Ver grabaciones</small>
+        </a>
+
+        <a class="cam-btn" href="grabaciones.html?cam=2">
+          <div class="cam-icon"></div>
+          <span>Cámara 2</span>
+          <small>Ver grabaciones</small>
+        </a>
+
+        <a class="cam-btn" href="grabaciones.html?cam=3">
+          <div class="cam-icon"></div>
+          <span>Cámara 3</span>
+          <small>Ver grabaciones</small>
+        </a>
+
+        <a class="cam-btn" href="grabaciones.html?cam=4">
+          <div class="cam-icon"></div>
+          <span>Cámara 4</span>
+          <small>Ver grabaciones</small>
+        </a>
+
+        <a class="cam-btn" href="grabaciones.html?cam=5">
+          <div class="cam-icon"></div>
+          <span>Cámara 5</span>
+          <small>Ver grabaciones</small>
+        </a>
+
+        <a class="cam-btn" href="grabaciones.html?cam=6">
+          <div class="cam-icon"></div>
+          <span>Cámara 6</span>
+          <small>Ver grabaciones</small>
+        </a>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <span class="footer-text"
+        >© 2026 UAT RODHE | Ingenieria en Sistemas Computacionales 4 "J"</span
+      >
+      <span class="footer-text" id="reloj"></span>
+    </footer>
+
+    <script>
+      function actualizarReloj() {
+        document.getElementById("reloj").textContent =
+          new Date().toLocaleTimeString("es-MX");
+      }
+      setInterval(actualizarReloj, 1000);
+      actualizarReloj();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,350 @@
+﻿<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grabaciones — Proyecto NVR</title>
+    <style>
+      :root {
+        --bg: #212529;
+        --surface: #2c3034;
+        --border: #373b3e;
+        --text: #dee2e6;
+        --muted: #6c757d;
+        --accent: #0dcaf0;
+        --green: #198754;
+        --white: #f8f9fa;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* ── HEADER ── */
+      header {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      header h1 {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: var(--white);
+      }
+
+      nav {
+        display: flex;
+        gap: 8px;
+      }
+
+      .nav-link {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.875rem;
+        padding: 6px 14px;
+        border-radius: 4px;
+        transition:
+          background 0.15s,
+          color 0.15s;
+      }
+
+      .nav-link:hover {
+        background: var(--border);
+        color: var(--white);
+      }
+
+      .nav-link.active {
+        color: var(--white);
+      }
+
+      /* ── CONTENIDO PRINCIPAL ── */
+      main {
+        flex: 1;
+        padding: 32px 24px;
+        max-width: 1000px;
+        width: 100%;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      /* Barra superior con título y botón de volver */
+      .top-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .top-bar-left {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .top-bar-left h2 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--white);
+      }
+
+      .top-bar-left p {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+
+      /* Botón de volver a la selección de cámara */
+      .btn-back {
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        color: var(--muted);
+        font-size: 0.82rem;
+        padding: 7px 16px;
+        cursor: pointer;
+        text-decoration: none;
+        transition:
+          background 0.15s,
+          color 0.15s,
+          border-color 0.15s;
+      }
+
+      .btn-back:hover {
+        background: var(--border);
+        color: var(--white);
+        border-color: var(--accent);
+      }
+
+      /* ── GRID DE GRABACIONES ──
+       Genera automáticamente tantas columnas como quepan
+       con un mínimo de 220px por tarjeta */
+      .recordings-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 14px;
+      }
+
+      /* Tarjeta de cada grabación */
+      .recording-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 18px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        cursor: pointer;
+        transition:
+          background 0.15s,
+          border-color 0.15s;
+      }
+
+      .recording-card:hover {
+        background: var(--border);
+        border-color: var(--accent);
+      }
+
+      /* Ícono de video en la tarjeta */
+      .card-icon {
+        width: 36px;
+        height: 26px;
+        border: 2px solid var(--muted);
+        border-radius: 3px;
+        position: relative;
+        flex-shrink: 0;
+      }
+
+      .card-icon::after {
+        content: "";
+        position: absolute;
+        right: -8px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-left: 6px solid var(--muted);
+        border-top: 4px solid transparent;
+        border-bottom: 4px solid transparent;
+      }
+
+      .recording-card:hover .card-icon,
+      .recording-card:hover .card-icon::after {
+        border-color: var(--accent);
+      }
+
+      .recording-card:hover .card-icon::after {
+        border-left-color: var(--accent);
+      }
+
+      /* Fecha de la grabación — es el nombre del archivo sin extensión */
+      .card-date {
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: var(--white);
+        /* Reemplaza los guiones bajos por espacios para que sea más legible */
+        word-break: break-all;
+      }
+
+      /* Etiqueta MP4 */
+      .card-badge {
+        font-size: 0.68rem;
+        background: rgba(13, 202, 240, 0.1);
+        color: var(--accent);
+        border: 1px solid rgba(13, 202, 240, 0.25);
+        border-radius: 4px;
+        padding: 2px 8px;
+        width: fit-content;
+      }
+
+      /* ── ESTADOS DE LA PÁGINA ── */
+
+      /* Mientras carga */
+      .state-loading,
+      .state-empty,
+      .state-error {
+        text-align: center;
+        padding: 60px 24px;
+        color: var(--muted);
+        font-size: 0.9rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .state-loading {
+        display: flex;
+      }
+      .state-empty {
+        display: none;
+      }
+      .state-error {
+        display: none;
+        color: #dc3545;
+      }
+
+      /* Animación de puntos para el estado de carga */
+      .loading-dots span {
+        display: inline-block;
+        animation: bounce 1.2s infinite;
+        font-size: 1.5rem;
+      }
+
+      .loading-dots span:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .loading-dots span:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+
+      /* ── FOOTER ── */
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 12px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--surface);
+      }
+
+      .footer-text {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <h1>Proyecto NVR</h1>
+      <nav>
+        <a href="index.html" class="nav-link">En Vivo</a>
+        <a href="select_grab.html" class="nav-link active">Grabaciones</a>
+      </nav>
+    </header>
+
+    <!-- Contenido -->
+    <main>
+      <!-- Barra superior -->
+      <div class="top-bar">
+        <div class="top-bar-left">
+          <!-- El título se actualiza con JS según la cámara elegida -->
+          <h2 id="pageTitle">Grabaciones</h2>
+          <p id="pageSubtitle">Cargando grabaciones...</p>
+        </div>
+        <!-- Volver a la selección de cámara -->
+        <a class="btn-back" href="select_grab.html">← Cambiar cámara</a>
+      </div>
+
+      <!-- Estado: cargando -->
+      <div class="state-loading" id="stateLoading">
+        <div class="loading-dots">
+          <span>·</span><span>·</span><span>·</span>
+        </div>
+        <span>Buscando grabaciones...</span>
+      </div>
+
+      <!-- Estado: sin grabaciones -->
+      <div class="state-empty" id="stateEmpty">
+        <span style="font-size: 2rem">📂</span>
+        <span>No se encontraron grabaciones para esta cámara</span>
+      </div>
+
+      <!-- Estado: error de conexión -->
+      <div class="state-error" id="stateError">
+        <span style="font-size: 2rem">⚠️</span>
+        <span id="errorMsg">Error al conectar con el backend</span>
+      </div>
+
+      <!-- Grid donde se generan las tarjetas dinámicamente -->
+      <div class="recordings-grid" id="recordingsGrid"></div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <span class="footer-text"
+        >>© 2026 UAT RODHE | Ingenieria en Sistemas Computacionales 4 "J"</span
+      >
+      <span class="footer-text" id="reloj"></span>
+    </footer>
+
+    <script src="fileloader.js">
+      // ── Reloj ──
+      function actualizarReloj() {
+        document.getElementById("reloj").textContent =
+          new Date().toLocaleTimeString("es-MX");
+      }
+      setInterval(actualizarReloj, 1000);
+      actualizarReloj();
+    </script>
+  </body>
+</html>
