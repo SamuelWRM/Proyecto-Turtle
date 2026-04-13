@@ -37,7 +37,6 @@
         min-height: 100vh;
       }
 
-      /* ── HEADER ── */
       header {
         background: var(--surface);
         border-bottom: 1px solid var(--border);
@@ -73,12 +72,10 @@
         background: var(--border);
         color: var(--white);
       }
-
       .nav-link.active {
         color: var(--white);
       }
 
-      /* ── CONTENIDO PRINCIPAL ── */
       main {
         flex: 1;
         padding: 32px 24px;
@@ -90,7 +87,6 @@
         gap: 24px;
       }
 
-      /* Barra superior con título y botón de volver */
       .top-bar {
         display: flex;
         align-items: center;
@@ -114,7 +110,6 @@
         color: var(--muted);
       }
 
-      /* Botón de volver a la selección de cámara */
       .btn-back {
         background: transparent;
         border: 1px solid var(--border);
@@ -136,16 +131,12 @@
         border-color: var(--accent);
       }
 
-      /* ── GRID DE GRABACIONES ──
-       Genera automáticamente tantas columnas como quepan
-       con un mínimo de 220px por tarjeta */
       .recordings-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 14px;
       }
 
-      /* Tarjeta de cada grabación */
       .recording-card {
         background: var(--surface);
         border: 1px solid var(--border);
@@ -165,7 +156,6 @@
         border-color: var(--accent);
       }
 
-      /* Ícono de video en la tarjeta */
       .card-icon {
         width: 36px;
         height: 26px;
@@ -195,16 +185,13 @@
         border-left-color: var(--accent);
       }
 
-      /* Fecha de la grabación — es el nombre del archivo sin extensión */
       .card-date {
         font-size: 0.88rem;
         font-weight: 500;
         color: var(--white);
-        /* Reemplaza los guiones bajos por espacios para que sea más legible */
         word-break: break-all;
       }
 
-      /* Etiqueta MP4 */
       .card-badge {
         font-size: 0.68rem;
         background: rgba(13, 202, 240, 0.1);
@@ -215,9 +202,6 @@
         width: fit-content;
       }
 
-      /* ── ESTADOS DE LA PÁGINA ── */
-
-      /* Mientras carga */
       .state-loading,
       .state-empty,
       .state-error {
@@ -242,7 +226,6 @@
         color: #dc3545;
       }
 
-      /* Animación de puntos para el estado de carga */
       .loading-dots span {
         display: inline-block;
         animation: bounce 1.2s infinite;
@@ -266,7 +249,6 @@
         }
       }
 
-      /* ── FOOTER ── */
       footer {
         border-top: 1px solid var(--border);
         padding: 12px 24px;
@@ -280,10 +262,61 @@
         font-size: 0.8rem;
         color: var(--muted);
       }
+
+      /* ══════════════════════════════════════════
+         DISEÑO RESPONSIVO PARA MÓVIL
+         Solo aplica en pantallas de 768px o menos.
+         El diseño de escritorio de arriba no se toca.
+      ══════════════════════════════════════════ */
+      @media (max-width: 768px) {
+        main {
+          padding: 16px;
+          gap: 16px;
+        }
+
+        /* Dos tarjetas por fila, lado a lado */
+        .recordings-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+        }
+
+        .recording-card {
+          padding: 14px 12px;
+        }
+
+        /* Fecha más pequeña para que quepa en tarjetas estrechas */
+        .card-date {
+          font-size: 0.75rem;
+        }
+
+        /* La barra superior se apila para no apretarse */
+        .top-bar {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+
+        header {
+          padding: 10px 14px;
+        }
+        header h1 {
+          font-size: 1.1rem;
+        }
+        .nav-link {
+          font-size: 0.78rem;
+          padding: 5px 10px;
+        }
+
+        footer {
+          flex-direction: column;
+          gap: 4px;
+          text-align: center;
+          padding: 10px 14px;
+        }
+      }
     </style>
   </head>
   <body>
-    <!-- Header -->
     <header>
       <h1>Proyecto NVR</h1>
       <nav>
@@ -292,20 +325,15 @@
       </nav>
     </header>
 
-    <!-- Contenido -->
     <main>
-      <!-- Barra superior -->
       <div class="top-bar">
         <div class="top-bar-left">
-          <!-- El título se actualiza con JS según la cámara elegida -->
           <h2 id="pageTitle">Grabaciones</h2>
           <p id="pageSubtitle">Cargando grabaciones...</p>
         </div>
-        <!-- Volver a la selección de cámara -->
         <a class="btn-back" href="select_grab.html">← Cambiar cámara</a>
       </div>
 
-      <!-- Estado: cargando -->
       <div class="state-loading" id="stateLoading">
         <div class="loading-dots">
           <span>·</span><span>·</span><span>·</span>
@@ -313,23 +341,19 @@
         <span>Buscando grabaciones...</span>
       </div>
 
-      <!-- Estado: sin grabaciones -->
       <div class="state-empty" id="stateEmpty">
         <span style="font-size: 2rem">📂</span>
         <span>No se encontraron grabaciones para esta cámara</span>
       </div>
 
-      <!-- Estado: error de conexión -->
       <div class="state-error" id="stateError">
         <span style="font-size: 2rem">⚠️</span>
         <span id="errorMsg">Error al conectar con el backend</span>
       </div>
 
-      <!-- Grid donde se generan las tarjetas dinámicamente -->
       <div class="recordings-grid" id="recordingsGrid"></div>
     </main>
 
-    <!-- Footer -->
     <footer>
       <span class="footer-text"
         >>© 2026 UAT RODHE | Ingenieria en Sistemas Computacionales 4 "J"</span
@@ -337,14 +361,6 @@
       <span class="footer-text" id="reloj"></span>
     </footer>
 
-    <script src="fileloader.js">
-      // ── Reloj ──
-      function actualizarReloj() {
-        document.getElementById("reloj").textContent =
-          new Date().toLocaleTimeString("es-MX");
-      }
-      setInterval(actualizarReloj, 1000);
-      actualizarReloj();
-    </script>
+    <script src="fileloader.js"></script>
   </body>
 </html>
