@@ -5,7 +5,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Proyecto NVR</title>
-    <!-- HLS.js: librería que permite reproducir streams HLS en el navegador -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.7/hls.min.js"></script>
     <style>
       :root {
@@ -39,7 +38,6 @@
         min-height: 100vh;
       }
 
-      /* ── HEADER ── */
       header {
         background: var(--surface);
         border-bottom: 1px solid var(--border);
@@ -80,7 +78,6 @@
         color: var(--white);
       }
 
-      /* ── LAYOUT PRINCIPAL ── */
       .main-layout {
         display: flex;
         flex: 1;
@@ -101,12 +98,7 @@
         color: var(--accent);
         letter-spacing: 0.5px;
       }
-      /*
-      Video principal. Usamos <video> en lugar de <img> porque
-      HLS.js necesita la API de video del navegador para alimentarle
-      los fragmentos .ts. Con MJPEG alcanzaba con <img>, pero HLS
-      es más sofisticado y requiere el elemento correcto.
-    */
+
       #primaryVideo {
         width: 1150px;
         height: 448px;
@@ -118,7 +110,6 @@
         display: block;
       }
 
-      /* Panel lateral */
       .side-col {
         width: 320px;
         flex-shrink: 0;
@@ -128,7 +119,6 @@
         overflow-y: auto;
       }
 
-      /* Caja de cada cámara secundaria */
       .cam-box {
         background: #000;
         border-radius: 6px;
@@ -143,8 +133,6 @@
       .cam-box:hover {
         border-color: var(--accent);
       }
-
-      /* Marca visualmente cuál cámara es la que está en el principal */
       .cam-box.active {
         border-color: var(--accent);
       }
@@ -163,12 +151,6 @@
         pointer-events: none;
       }
 
-      /*
-      Videos secundarios sin controles, silenciados y en autoplay.
-      muted + autoplay es el par mágico que los navegadores modernos
-      requieren para reproducir video automáticamente sin que el usuario
-      haya interactuado primero con la página.
-    */
       .secondary-video {
         width: 100%;
         height: 160px;
@@ -177,7 +159,6 @@
         background: #000;
       }
 
-      /* Overlay "Ver en principal" que aparece al hacer hover */
       .cam-box::after {
         content: "Ver en principal";
         position: absolute;
@@ -195,12 +176,10 @@
       .cam-box:hover::after {
         opacity: 1;
       }
-      /* La cámara activa no necesita el overlay porque ya está en principal */
       .cam-box.active::after {
         content: none;
       }
 
-      /* ── FOOTER ── */
       footer {
         border-top: 1px solid var(--border);
         padding: 12px 24px;
@@ -215,6 +194,66 @@
         font-size: 0.8rem;
         color: var(--muted);
       }
+
+      /* ══════════════════════════════════════════
+         DISEÑO RESPONSIVO PARA MÓVIL
+         Solo aplica en pantallas de 768px o menos.
+         El diseño de escritorio de arriba no se toca.
+      ══════════════════════════════════════════ */
+      @media (max-width: 768px) {
+        /* Ocultamos el video principal y su label,
+           en móvil solo se ven las 6 cámaras en columna */
+        .primary-col {
+          display: none;
+        }
+
+        .main-layout {
+          flex-direction: column;
+          padding: 8px;
+          gap: 8px;
+        }
+
+        /* El panel ocupa todo el ancho de la pantalla */
+        .side-col {
+          width: 100%;
+          overflow-y: visible;
+        }
+
+        /* Cada cámara ocupa todo el ancho */
+        .cam-box {
+          width: 100%;
+        }
+
+        /* Los videos son más altos porque son la única vista */
+        .secondary-video {
+          height: 210px;
+        }
+
+        /* Sin overlay en móvil porque no hay reproductor principal */
+        .cam-box::after {
+          content: none;
+        }
+
+        header {
+          padding: 10px 14px;
+        }
+
+        header h1 {
+          font-size: 1.1rem;
+        }
+
+        .nav-link {
+          font-size: 0.78rem;
+          padding: 5px 10px;
+        }
+
+        footer {
+          flex-direction: column;
+          gap: 4px;
+          text-align: center;
+          padding: 10px 14px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -227,13 +266,10 @@
     </header>
 
     <div class="main-layout">
-      <!-- Cámara principal: arranca mostrando la cámara 6 por defecto -->
       <div class="primary-col">
         <span class="primary-label" id="primaryLabel">CAM 6 — PRINCIPAL</span>
         <video id="primaryVideo" muted autoplay playsinline></video>
       </div>
-
-      <!-- Panel lateral: las 6 cajas se generan con JavaScript -->
       <div class="side-col" id="sideCol"></div>
     </div>
 
