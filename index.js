@@ -1,6 +1,6 @@
 // ── Configuración ──
 // Cambia esta URL por la de ngrok o Cloudflare cuando lo despliegues
-const BASE_URL = "https://proposals-suburban-beverages-agents.trycloudflare.com";
+const BASE_URL = "https://costumes-register-pac-mold.trycloudflare.com";
 
 // Número total de cámaras del sistema
 const TOTAL_CAMARAS = 6;
