@@ -38,7 +38,6 @@
         min-height: 100vh;
       }
 
-      /* ── HEADER ── */
       header {
         background: var(--surface);
         border-bottom: 1px solid var(--border);
@@ -54,7 +53,6 @@
         font-weight: 600;
         color: var(--white);
       }
-
       nav {
         display: flex;
         gap: 8px;
@@ -75,13 +73,10 @@
         background: var(--border);
         color: var(--white);
       }
-
       .nav-link.active {
         color: var(--white);
       }
 
-      /* ── LAYOUT PRINCIPAL ──
-       Igual que NVR.html: columna principal + panel lateral */
       .main-layout {
         display: flex;
         flex: 1;
@@ -89,7 +84,6 @@
         overflow: hidden;
       }
 
-      /* ── COLUMNA IZQUIERDA: REPRODUCTOR ── */
       .player-col {
         flex: 1;
         display: flex;
@@ -98,7 +92,6 @@
         min-width: 0;
       }
 
-      /* Barra de info encima del video */
       .player-topbar {
         background: var(--surface);
         border-bottom: 1px solid var(--border);
@@ -114,13 +107,11 @@
         flex-direction: column;
         gap: 2px;
       }
-
       .player-filename {
         font-size: 0.85rem;
         font-weight: 500;
         color: var(--white);
       }
-
       .player-caminfo {
         font-size: 0.72rem;
         color: var(--muted);
@@ -144,13 +135,6 @@
         border-color: var(--accent);
       }
 
-      /*
-      El elemento <video> nativo del navegador.
-      Con el atributo "controls" el navegador muestra
-      automáticamente play, pausa, barra de progreso,
-      volumen y pantalla completa, igual que YouTube.
-      No necesitas programar nada de eso.
-    */
       #videoPlayer {
         width: 100%;
         flex: 1;
@@ -159,7 +143,6 @@
         min-height: 300px;
       }
 
-      /* ── COLUMNA DERECHA: PANEL DE ANÁLISIS ── */
       .analysis-col {
         width: 340px;
         flex-shrink: 0;
@@ -183,14 +166,12 @@
         font-weight: 600;
         color: var(--white);
       }
-
       .analysis-subtitle {
         font-size: 0.75rem;
         color: var(--muted);
         line-height: 1.5;
       }
 
-      /* Botón principal de analizar */
       .btn-analyze {
         background: var(--accent);
         border: none;
@@ -212,7 +193,6 @@
         cursor: not-allowed;
       }
 
-      /* ── ÁREA DE RESULTADOS ── */
       .analysis-body {
         flex: 1;
         overflow-y: auto;
@@ -222,7 +202,6 @@
         gap: 12px;
       }
 
-      /* Estado inicial antes de analizar */
       .state-idle {
         display: flex;
         flex-direction: column;
@@ -239,7 +218,6 @@
         font-size: 2rem;
       }
 
-      /* Estado cargando */
       .state-loading {
         display: none;
         flex-direction: column;
@@ -256,7 +234,6 @@
         animation: bounce 1.2s infinite;
         font-size: 1.4rem;
       }
-
       .loading-dots span:nth-child(2) {
         animation-delay: 0.2s;
       }
@@ -274,21 +251,17 @@
         }
       }
 
-      /* Contenedor del resultado del análisis */
       .result-container {
         display: none;
         flex-direction: column;
         gap: 14px;
       }
-
       .result-label {
         font-size: 0.72rem;
         color: var(--muted);
         text-transform: uppercase;
         letter-spacing: 0.5px;
       }
-
-      /* Texto del análisis de Gemini */
       .result-text {
         font-size: 0.82rem;
         line-height: 1.7;
@@ -296,7 +269,6 @@
         white-space: pre-wrap;
       }
 
-      /* Separador antes de los timestamps */
       .timestamps-section {
         border-top: 1px solid var(--border);
         padding-top: 14px;
@@ -311,12 +283,6 @@
         color: var(--white);
       }
 
-      /*
-      Cada timestamp es un botón clickeable.
-      Al hacer click, JavaScript lee el tiempo que tiene guardado
-      en data-seconds y lo asigna a videoPlayer.currentTime,
-      lo que salta el video al momento exacto.
-    */
       .timestamp-btn {
         background: rgba(13, 202, 240, 0.08);
         border: 1px solid rgba(13, 202, 240, 0.2);
@@ -337,8 +303,6 @@
         background: rgba(13, 202, 240, 0.15);
         border-color: var(--accent);
       }
-
-      /* El tiempo en formato MM:SS */
       .timestamp-time {
         font-size: 0.78rem;
         font-weight: 600;
@@ -346,15 +310,12 @@
         white-space: nowrap;
         font-family: monospace;
       }
-
-      /* La descripción de qué pasa en ese momento */
       .timestamp-desc {
         font-size: 0.78rem;
         color: var(--text);
         line-height: 1.4;
       }
 
-      /* ── FOOTER ── */
       footer {
         border-top: 1px solid var(--border);
         padding: 10px 24px;
@@ -369,10 +330,71 @@
         font-size: 0.8rem;
         color: var(--muted);
       }
+
+      /* ══════════════════════════════════════════
+         DISEÑO RESPONSIVO PARA MÓVIL
+         Solo aplica en pantallas de 768px o menos.
+         El diseño de escritorio de arriba no se toca.
+      ══════════════════════════════════════════ */
+      @media (max-width: 768px) {
+        /* Layout vertical: reproductor arriba, IA abajo */
+        .main-layout {
+          flex-direction: column;
+          overflow: visible;
+        }
+
+        /* Sin borde derecho, ahora el borde va abajo */
+        .player-col {
+          border-right: none;
+          border-bottom: 1px solid var(--border);
+        }
+
+        /* Video en proporción 16:9 del ancho de la pantalla */
+        #videoPlayer {
+          min-height: unset;
+          flex: unset;
+          aspect-ratio: 16 / 9;
+        }
+
+        /* Panel de IA ocupa todo el ancho */
+        .analysis-col {
+          width: 100%;
+          overflow: visible;
+        }
+
+        /* El body del análisis ya no tiene scroll propio,
+           la página completa hace scroll */
+        .analysis-body {
+          overflow-y: visible;
+        }
+
+        .player-topbar {
+          padding: 10px 14px;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+
+        header {
+          padding: 10px 14px;
+        }
+        header h1 {
+          font-size: 1.1rem;
+        }
+        .nav-link {
+          font-size: 0.78rem;
+          padding: 5px 10px;
+        }
+
+        footer {
+          flex-direction: column;
+          gap: 4px;
+          text-align: center;
+          padding: 10px 14px;
+        }
+      }
     </style>
   </head>
   <body>
-    <!-- Header -->
     <header>
       <h1>Proyecto NVR</h1>
       <nav>
@@ -381,31 +403,20 @@
       </nav>
     </header>
 
-    <!-- Layout principal -->
     <div class="main-layout">
-      <!-- Columna del reproductor -->
       <div class="player-col">
         <div class="player-topbar">
           <div class="player-topbar-left">
             <span class="player-filename" id="playerFilename">Cargando...</span>
             <span class="player-caminfo" id="playerCaminfo"></span>
           </div>
-          <!-- El href se actualiza con JS para regresar a la lista correcta -->
           <a class="btn-back" id="btnBack" href="select_grab.html">← Volver</a>
         </div>
-
-        <!--
-        Reproductor nativo HTML5.
-        - "controls" muestra los controles de YouTube automáticamente
-        - "preload="metadata"" carga solo la info básica del video al inicio
-          para no desperdiciar ancho de banda antes de que el usuario le dé play
-      -->
         <video id="videoPlayer" controls preload="metadata">
           Tu navegador no soporta la reproducción de video.
         </video>
       </div>
 
-      <!-- Columna de análisis con IA -->
       <div class="analysis-col">
         <div class="analysis-header">
           <span class="analysis-title">Análisis con IA</span>
@@ -419,7 +430,6 @@
         </div>
 
         <div class="analysis-body">
-          <!-- Estado inicial -->
           <div class="state-idle" id="stateIdle">
             <span>🔍</span>
             <span
@@ -428,7 +438,6 @@
             >
           </div>
 
-          <!-- Estado cargando -->
           <div class="state-loading" id="stateLoading">
             <div class="loading-dots">
               <span>·</span><span>·</span><span>·</span>
@@ -439,15 +448,9 @@
             >
           </div>
 
-          <!-- Resultado del análisis -->
           <div class="result-container" id="resultContainer">
             <span class="result-label">Resultado del análisis</span>
-
-            <!-- Texto completo que devuelve Gemini -->
             <div class="result-text" id="resultText"></div>
-
-            <!-- Sección de timestamps clickeables -->
-            <!-- Solo aparece si Gemini encontró timestamps en su respuesta -->
             <div
               class="timestamps-section"
               id="timestampsSection"
@@ -461,7 +464,6 @@
       </div>
     </div>
 
-    <!-- Footer -->
     <footer>
       <span class="footer-text"
         >© 2026 UAT RODHE | Ingenieria en Sistemas Computacionales 4 "J"</span
